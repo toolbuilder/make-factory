@@ -1,0 +1,24 @@
+{
+  "name": "make-factory",
+  "version": "0.1.0-rc0",
+  "description": "Generate a factory class from a class constructor function. Adds static methods from all super classes",
+  "main": "index.js",
+  "module": "src/factory.js",
+  "scripts": {
+    "test": "tape -r esm test/*_test.js | tap-nirvana"
+  },
+  "keywords": [
+    "javascript",
+    "factory",
+    "new"
+  ],
+  "author": "Kevin Hudson",
+  "license": "MIT",
+  "dependencies": {
+    "esm": "^3.2.25"
+  },
+  "devDependencies": {
+    "tap-nirvana": "^1.1.0",
+    "tape": "^4.11.0"
+  }
+}
