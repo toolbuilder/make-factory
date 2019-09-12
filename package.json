@@ -1,12 +1,16 @@
 {
   "name": "make-factory",
-  "version": "0.1.0-rc0",
+  "version": "0.1.0-rc1",
   "description": "Generate a factory class from a class constructor function. Adds static methods from all super classes",
   "main": "index.js",
   "module": "src/factory.js",
   "scripts": {
     "test": "tape -r esm test/*_test.js | tap-nirvana"
   },
+  "files": [
+    "src",
+    "index.js"
+  ],
   "keywords": [
     "javascript",
     "factory",
