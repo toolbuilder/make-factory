@@ -1,6 +1,6 @@
 {
-  "name": "make-factory",
-  "version": "0.1.0-rc1",
+  "name": "@toolbuilder/make-factory",
+  "version": "0.1.0-rc2",
   "description": "Generate a factory class from a class constructor function. Adds static methods from all super classes",
   "main": "index.js",
   "module": "src/factory.js",
