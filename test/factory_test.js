@@ -127,5 +127,6 @@ tape('makeFactory', test => {
   test.deepEqual(StaticD().attribute, 'D.constructor', 'factory class as function creates correct instance')
   test.deepEqual(StaticD.static3(), 'D.static3', 'correct static method is called - not super class method')
   test.deepEqual(StaticD.static4(), 'D.static4', 'correct static method is called - not super class method')
+  test.true(StaticD() instanceof D, 'function call returns instance')
   test.end()
 })

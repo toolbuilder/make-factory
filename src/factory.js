@@ -99,6 +99,7 @@ export const makeFactory = (Constructor, stopAt = Object) => {
   }
 
   getMethodsOfClass(Constructor)
+
     .staticMethods
     .forEach(({ constructor, methodName }) => {
     // methods are in order from subclass to superclass, so
