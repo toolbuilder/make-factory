@@ -1,6 +1,6 @@
 {
   "name": "@toolbuilder/make-factory",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Generate a factory class from a class constructor function. Adds static methods from all super classes",
   "main": "index.js",
   "module": "src/factory.js",
@@ -9,6 +9,10 @@
     "lint": "eslint src test",
     "prepublishOnly": "npm run build",
     "test": "tape -r esm test/*_test.js | tap-nirvana"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/toolbuilder/make-factory"
   },
   "files": [
     "src",
