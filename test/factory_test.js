@@ -1,4 +1,4 @@
-import tape from 'tape'
+import { test } from 'zora'
 import { getMethodsOfClass, getMethodsOfInstance, makeFactory } from '../src/factory.js'
 
 class A {
@@ -94,24 +94,22 @@ const validate = (test, constructor, stopAt, ...data) => {
   test.deepEqual(actual, expected, `methods reported correctly for ${name}, stopping at ${stopAt.name}`)
 }
 
-tape('getMethodsOfClass', test => {
-  validate(test, A, Object, methodsOfA)
-  validate(test, B, Object, methodsOfB, methodsOfA)
-  validate(test, B, A, methodsOfB)
-  validate(test, C, Object, methodsOfB, methodsOfA)
-  validate(test, C, A, methodsOfB)
-  validate(test, D, Object, methodsOfD, methodsOfB, methodsOfA)
-  test.end()
+test('getMethodsOfClass', assert => {
+  validate(assert, A, Object, methodsOfA)
+  validate(assert, B, Object, methodsOfB, methodsOfA)
+  validate(assert, B, A, methodsOfB)
+  validate(assert, C, Object, methodsOfB, methodsOfA)
+  validate(assert, C, A, methodsOfB)
+  validate(assert, D, Object, methodsOfD, methodsOfB, methodsOfA)
 })
 
-tape('getMethodsOfInstance', test => {
+test('getMethodsOfInstance', assert => {
   const actual = getMethodsOfInstance(new D(), A)
   const expected = getMethodsOfClass(D, A) // since we've just tested getMethodsOfClass
-  test.deepEqual(actual, expected, 'getMethodsOfInstance agrees with getMethodsOfClass')
-  test.end()
+  assert.deepEqual(actual, expected, 'getMethodsOfInstance agrees with getMethodsOfClass')
 })
 
-tape('makeFactory', test => {
+test('makeFactory', assert => {
   const StaticD = makeFactory(D)
   const actualMethodData = getMethodsOfClass(StaticD)
   const expectedMethodData = {
@@ -123,10 +121,9 @@ tape('makeFactory', test => {
       { constructor: StaticD, methodName: 'static1' }
     ]
   }
-  test.deepEqual(actualMethodData, expectedMethodData, 'factory class has correct methods')
-  test.deepEqual(StaticD().attribute, 'D.constructor', 'factory class as function creates correct instance')
-  test.deepEqual(StaticD.static3(), 'D.static3', 'correct static method is called - not super class method')
-  test.deepEqual(StaticD.static4(), 'D.static4', 'correct static method is called - not super class method')
-  test.true(StaticD() instanceof D, 'function call returns instance')
-  test.end()
+  assert.deepEqual(actualMethodData, expectedMethodData, 'factory class has correct methods')
+  assert.deepEqual(StaticD().attribute, 'D.constructor', 'factory class as function creates correct instance')
+  assert.deepEqual(StaticD.static3(), 'D.static3', 'correct static method is called - not super class method')
+  assert.deepEqual(StaticD.static4(), 'D.static4', 'correct static method is called - not super class method')
+  assert.truthy(StaticD() instanceof D, 'function call returns instance')
 })

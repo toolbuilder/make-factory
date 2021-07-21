@@ -32,7 +32,7 @@ The package provides the 'modules' field in package.json, so bundling tools and 
 
 ## Documentation
 
-See the JSDoc comments in `src/factory.js`. For further examples, see the unit tests in `test/factory_test.js`.
+See the JSDoc comments in [source](./src/factory.js). For further examples, see the [unit tests](./test/factory_test.js).
 
 ## Example
 
@@ -63,12 +63,13 @@ This library is about choice - not being pedantic. In libraries, I like to provi
 
 Contributions are welcome. Please create a pull request.
 
-I use [pnpm](https://pnpm.js.org/) instead of npm.
-
-I've been using [Verdaccio](https://github.com/verdaccio/verdaccio) for testing release candidates. But published
-package testing is not yet automated. Neither is browser testing. Lots of room for improvement here.
-
-Coding style is based on [standard](https://github.com/standard/eslint-config-standard) minus the import, promise, and node plugins. I moved away from standard because they are showing ads during build with the latest releases.
+* I use [pnpm](https://pnpm.js.org/) instead of npm.
+* Run the unit tests with `pnpm test`
+* Package verification requires [pnpm](https://pnpm.io/) to be installed globally.
+  * `npm install -g pnpm`
+  * `pnpm install`
+  * `pnpm run check:packfile` to test against ES and CommonJS projects
+  * `pnpm run check` to validate the package is ready for commit
 
 ## Issues
 
@@ -76,13 +77,4 @@ This project uses Github issues.
 
 ## License
 
-<!-- include (LICENSE) -->
-The MIT License (MIT)
-
-Copyright 2019 Kevin Hudson
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.<!-- /include -->
+MIT
