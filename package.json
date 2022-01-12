@@ -1,63 +1,64 @@
 {
-  "name": "@toolbuilder/make-factory",
-  "version": "0.1.2",
-  "description": "Generate a factory class from a class constructor function. Adds static methods from all super classes.",
-  "keywords": [
-    "javascript",
-    "factory",
-    "new"
-  ],
-  "homepage": "https://github.com/toolbuilder/make-factory#readme",
-  "bugs": {
-    "url": "https://github.com/toolbuilder/make-factory/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/toolbuilder/make-factory.git"
-  },
-  "license": "MIT",
-  "author": "Kevin Hudson",
-  "type": "module",
-  "exports": {
-    "import": "./src/factory.js",
-    "require": "./cjs/factory.js"
-  },
-  "main": "cjs/factory.js",
-  "module": "src/factory.js",
-  "files": [
-    "cjs",
-    "src"
-  ],
-  "scripts": {
-    "build": "rollup -c rollup.config.cjs.js",
-    "check": "run-s build check:*",
-    "check:packagejson": "npmPkgJsonLint .",
-    "check:packfile": "rollup -c rollup.config.test.js",
-    "check:src": "eslint src test",
-    "check:test": "run-s test",
-    "check:uncommitted": "uncommitted",
-    "prerelease": "run-s check",
-    "release": "standard-version",
-    "test": "esm-tape-runner \"test/**/*test.js\""
-  },
-  "eslintConfig": {
-    "extends": "@toolbuilder/eslint-config"
-  },
-  "devDependencies": {
-    "@small-tech/esm-tape-runner": "^1.0.3",
-    "@toolbuilder/eslint-config": "^0.1.0-rc1",
-    "@toolbuilder/package-json-lint-config": "^0.1.0",
-    "@toolbuilder/rollup-plugin-test-tools": "^0.1.0",
-    "eslint": "^6.3.0",
-    "npm-package-json-lint": "^5.1.0",
-    "npm-run-all": "^4.1.5",
-    "rollup": "^2.53.3",
-    "standard-version": "^9.3.1",
-    "tap-nirvana": "^1.1.0",
-    "uncommitted": "^1.0.0",
-    "zora": "^5.0.0-alpha.3"
-  },
-  "npmpackagejsonlint": {
-    "extends": "@toolbuilder/package-json-lint-config"
-  }
+ "name": "@toolbuilder/make-factory",
+ "version": "0.1.2",
+ "description": "Generate a factory method from a class constructor function. Adds static methods from all super classes.",
+ "keywords": [
+  "javascript",
+  "factory",
+  "new"
+ ],
+ "homepage": "https://github.com/toolbuilder/make-factory#readme",
+ "bugs": {
+  "url": "https://github.com/toolbuilder/make-factory/issues"
+ },
+ "repository": {
+  "type": "git",
+  "url": "https://github.com/toolbuilder/make-factory.git"
+ },
+ "license": "MIT",
+ "author": "Kevin Hudson",
+ "type": "module",
+ "exports": {
+  "import": "./src/factory.js",
+  "require": "./cjs/factory.js"
+ },
+ "main": "cjs/factory.js",
+ "module": "src/factory.js",
+ "files": [
+  "cjs",
+  "src"
+ ],
+ "scripts": {
+  "build": "rollup -c rollup.config.cjs.js",
+  "check": "run-s build check:*",
+  "check:packagejson": "npmPkgJsonLint .",
+  "check:packfile": "rollup -c rollup.config.test.js",
+  "check:src": "eslint src test",
+  "check:test": "run-s test",
+  "check:uncommitted": "uncommitted",
+  "prerelease": "run-s check",
+  "release": "standard-version",
+  "test": "esm-tape-runner \"test/**/*test.js\""
+ },
+ "eslintConfig": {
+  "extends": "@toolbuilder/eslint-config"
+ },
+ "dependencies": {},
+ "devDependencies": {
+  "@small-tech/esm-tape-runner": "^1.0.3",
+  "@toolbuilder/eslint-config": "^0.1.5",
+  "@toolbuilder/package-json-lint-config": "^0.1.0",
+  "@toolbuilder/rollup-plugin-test-tools": "^0.1.4",
+  "eslint": "^8.6.0",
+  "npm-package-json-lint": "^5.4.2",
+  "npm-run-all": "^4.1.5",
+  "rollup": "^2.63.0",
+  "standard-version": "^9.3.2",
+  "tap-nirvana": "^1.1.0",
+  "uncommitted": "^1.0.0",
+  "zora": "^5.0.2"
+ },
+ "npmpackagejsonlint": {
+  "extends": "@toolbuilder/package-json-lint-config"
+ }
 }
