@@ -1,38 +1,6 @@
 # Make Factory
 
-Simple class to create a factory class/function from a class constructor. Correctly walks super classes to
-find static methods, and add them to the factory.
-
-* `makeFactory` - creates a factory from a constructor function. The factory includes all static methods
-* `getMethods` - finds user instance and static methods for a prototype chain
-* `getMethodsOfClass` - same as getMethods, but for class constructor
-* `getMethodsOfInstance` - same as getMethods, but for instances
-
-## Table of Contents
-
-<!-- !toc (minlevel=2 omit="Features;Table of Contents") -->
-
-* [Installation](#installation)
-* [Documentation](#documentation)
-* [Example](#example)
-* [Why](#why)
-* [Contributing](#contributing)
-* [Issues](#issues)
-* [License](#license)
-
-## Installation
-
-I use [pnpm](https://pnpm.js.org/) instead of npm. Use what you like.
-
-```bash
-pnpm install --save @toolbuilder/make-factory
-```
-
-The package provides the 'modules' field in package.json, so bundling tools and node can find the ES modules.
-
-## Documentation
-
-See the JSDoc comments in [source](./src/factory.js). For further examples, see the [unit tests](./test/factory_test.js).
+Generate a factory method from a class constructor function. Adds static methods from all super classes to the factory. Also provides methods to walk prototype chains to get user instance and static methods.
 
 ## Example
 
@@ -48,12 +16,29 @@ class B extends A {
   static b () {}
 }
 
-const StaticB = makeFactory(B)
+const Factory = makeFactory(B)
 
-const b = StaticB('c', 'd') // equivalent to new B('c', 'd')
-StaticB.b() // equivalent to B.b()
-StaticB.a() // equivalent to B.a()
+const b = Factory('c', 'd') // equivalent to new B('c', 'd')
+Factory.b() // equivalent to B.b()
+Factory.a() // equivalent to B.a()
 ```
+
+These are the exported methods.
+
+* `makeFactory` - creates a factory from a constructor function. The factory includes all static methods
+* `getMethods` - finds user instance and static methods for a prototype chain
+* `getMethodsOfClass` - same as getMethods, but for class constructor
+* `getMethodsOfInstance` - same as getMethods, but for instances
+
+## Installation
+
+```bash
+npm install --save @toolbuilder/make-factory
+```
+
+## Documentation
+
+See the JSDoc comments in [source](./src/factory.js). For further examples, see the [unit tests](./test/factory_test.js).
 
 ## Why
 
@@ -68,7 +53,7 @@ Contributions are welcome. Please create a pull request.
 * Package verification requires [pnpm](https://pnpm.io/) to be installed globally.
   * `npm install -g pnpm`
   * `pnpm install`
-  * `pnpm run check:packfile` to test against ES and CommonJS projects
+  * `pnpm run check:packfile` to test against Node ES and CommonJS projects, as well as Electron.
   * `pnpm run check` to validate the package is ready for commit
 
 ## Issues
