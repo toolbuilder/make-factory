@@ -7,10 +7,10 @@
 export default [
   {
     input: 'src/factory.js',
-    preserveModules: true,
     output: {
       dir: 'cjs',
-      format: 'cjs'
+      format: 'cjs',
+      preserveModules: true
     }
   }
 ]

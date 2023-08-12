@@ -1,35 +1,23 @@
 /**
- * Walks the prototype chain, and returns user instance and static methods.
+ * @typedef {object} MethodInfo - Provides class or constructor function and function name.
+ * @property {object} constructor - the constructor or class that declares the method
+ * @property {string} methodName - the method name of the function
+ */
+
+/**
+ * @typedef {object} Result - Provides instance and static methods of class hierarchy.
+ * @property {MethodInfo[]} instanceMethods - method information for instance methods.
+ * @property {MethodInfo[]} staticMethods - method information for static methods
+ */
+
+/**
+ * Walks the class or prototype hierarchy, and returns user instance and static method names in result.
+ * Typically, getMethodsOfClass or getMethodsOfInstance is easier to use.
  *
- * @param {Constructor.prototype} prototype - start of prototype chain to walk
- * @param {Constructor} stopAt - stop walking prototype when this constructor is reached
- * @returns {Object} - see the example
- * @example
- * class Super {
- *   a () {}
- *   static b () {}
- *   static c () {}
- * }
- * class SubClass extends Super {
- *   c () {}
- *   static b () {}
- *   static d () {}
- * }
- * // This is what getMethods(SubClass.prototype, Object) would return
- * // The entries are provided in the order they are encountered while
- * // walking the prototype chain, so subclasses come first.
- * {
- *   instanceMethods: [
- *     { constructor: SubClass, methodName: 'c' },
- *     { constructor: Super, methodName: 'a' }
- * ],
- *   staticMethods: [
- *     { constructor: SubClass, methodName: 'b' },
- *     { constructor: SubClass, methodName: 'd' }
- *     { constructor: Super, methodName: 'b' }
- *     { constructor: Super, methodName: 'c' }
- *   ]
- * }
+ * @type {(prototype: object, stopAt: object) => Result}
+ * @param {object} prototype - class or constructor function prototype of hierarchy to walk.
+ * @param {object} stopAt - stop walking hierarchy when this class or constructor function is reached
+ * @returns {Result} - the instance and static methods of the prototype chain
  */
 export const getMethods = (prototype, stopAt) => {
   const instanceMethods = []
@@ -46,35 +34,63 @@ export const getMethods = (prototype, stopAt) => {
       if (methodName === 'prototype') continue
       staticMethods.push({ constructor, methodName })
     }
-    prototype = Object.getPrototypeOf(prototype)
+    prototype = Object.getPrototypeOf(prototype) // always returns null or Object in es6 and above
   }
   return { instanceMethods, staticMethods }
 }
 
 /**
- * Walks the prototype chain of a constructor function, and returns user
+ * Walks the class hierarchy or prototype chain of a constructor function, and returns user
  * instance and static methods.
  *
- * @param {Constructor} Constructor - constructor function for which method
- * data is wanted.
- * @param {Constructor} stopAt - stop walking prototype chain when this
+ * @type {(constructor: object, stopAt?: object) => Result}
+ * @param {object} constructor - class for which method data is wanted
+ * @param {object} [stopAt] - stop walking prototype chain when this
  * constructor is reached.
- * @returns - same as getMethods return type
+ * @returns {Result}
+ * @example
+ * class Super {
+ *   a () {}
+ *   static b () {}
+ *   static c () {}
+ * }
+ * class SubClass extends Super {
+ *   c () {}
+ *   static b () {}
+ *   static d () {}
+ * }
+ *
+ * const result = getMethods(SubClass, Object)
+ *
+ * // result looks like this
+ * {
+ *   instanceMethods: [
+ *     { constructor: SubClass, methodName: 'c' },
+ *     { constructor: Super, methodName: 'a' }
+ * ],
+ *   staticMethods: [
+ *     { constructor: SubClass, methodName: 'b' },
+ *     { constructor: SubClass, methodName: 'd' }
+ *     { constructor: Super, methodName: 'b' }
+ *     { constructor: Super, methodName: 'c' }
+ *   ]
+ * }
  */
-export const getMethodsOfClass = (Constructor, stopAt = Object) => {
+export const getMethodsOfClass = (constructor, stopAt = Object) => {
   // Object.getPrototypeOf is not for constructors
-  const prototype = Constructor.prototype
+  const prototype = constructor.prototype
   return getMethods(prototype, stopAt)
 }
 
 /**
- * Walks the prototype chain of an instance object, and returns user
+ * Walks the class hierarchy or prototype chain of an instance object, and returns user
  * instance and static methods.
  *
- * @param {Object} instance - object for which method data is wanted
- * @param {Constructor} stopAt - stop walking prototype chain when this
+ * @type {(instance: object, stopAt?: object) => Result}
+ * @param {object} instance - object for which method data is wanted
+ * @param {object} [stopAt] - stop walking prototype chain when this
  * constructor is reached.
- * @returns - same as getMethods return type
+ * @returns {Result}
  */
 export const getMethodsOfInstance = (instance, stopAt = Object) => {
   const prototype = Object.getPrototypeOf(instance)
@@ -84,22 +100,37 @@ export const getMethodsOfInstance = (instance, stopAt = Object) => {
 /**
  * Constructs a static class from a class that requires new.
  *
- * @param {Constructor} Constructor - the constructor function
+ * @type {<C>(constructor: object, stopAt?: object) => (...any) => C }
+ * @param constructor - the constructor function
  * for which the static class is wanted
- * @param {Constructor} stopAt - stop walking prototype chain when this
+ * @param stopAt - stop walking prototype chain when this
  * constructor is reached. Static methods from stopAt are not included
  * in the returned static class.
+ * @returns the factory method that creates a class instance of type Constructor
  * @example
- * class A {}
- * const StaticClass = makeFactory(A)
+ * class Super {
+ *   a () {}
+ *   static b () {}
+ *   static c () {}
+ * }
+ * class SubClass extends Super {
+ *   c () {}
+ *   static b () {}
+ *   static d () {}
+ * }
+ *
+ * const Factory = makeFactory(SubClass)
+ *
+ * const subClassInstance = Factory()
+ * subClassInstance.a() // call Super.a()
+ * Factory.b()          // call SubClass.b()
  */
-export const makeFactory = (Constructor, stopAt = Object) => {
+export const makeFactory = (constructor, stopAt = Object) => {
   const FactoryClass = function (...args) {
-    return new Constructor(...args)
+    return new constructor(...args)
   }
 
-  getMethodsOfClass(Constructor)
-
+  getMethodsOfClass(constructor, stopAt)
     .staticMethods
     .forEach(({ constructor, methodName }) => {
     // methods are in order from subclass to superclass, so

@@ -1,16 +1,16 @@
 import { test } from 'zora'
-import { getMethodsOfClass, getMethodsOfInstance, makeFactory } from '../src/factory.js'
+// @ts-ignore
+import { getMethodsOfClass, getMethodsOfInstance, makeFactory } from '@toolbuilder/make-factory'
 
 class A {
   method1 () {}
-
   method2 () {}
 
   static static1 () {}
-
   static static2 () {}
 }
 
+// Test validation data for class A
 const methodsOfA = {
   instanceMethods: [
     { constructor: A, methodName: 'method1' },
@@ -24,14 +24,13 @@ const methodsOfA = {
 
 class B extends A {
   method1 () { super.method1() }
-
   method3 () {}
 
   static static2 () {}
-
   static static3 () {}
 }
 
+// Test validation data for class B
 const methodsOfB = {
   instanceMethods: [
     { constructor: B, methodName: 'method1' },
@@ -52,14 +51,13 @@ class D extends B {
   }
 
   method1 () { return 'D.method1' }
-
   method4 () { return 'D.method4' }
 
   static static3 () { return 'D.static3' }
-
   static static4 () { return 'D.static4' }
 }
 
+// Test validation data for class D
 const methodsOfD = {
   instanceMethods: [
     { constructor: D, methodName: 'method1' },
@@ -71,7 +69,7 @@ const methodsOfD = {
   ]
 }
 
-// Combine methodsOfX instances together to make full set of methods for a class.
+// Combine methodsOf* instances together to make full set of methods for a class.
 const combinedData = (...args) => {
   const combined = { instanceMethods: [], staticMethods: [] }
   for (const data of args) {
@@ -95,6 +93,7 @@ const validate = (test, constructor, stopAt, ...data) => {
 }
 
 test('getMethodsOfClass', assert => {
+  validate(assert, Object, Object, { instanceMethods: [], staticMethods: [] })
   validate(assert, A, Object, methodsOfA)
   validate(assert, B, Object, methodsOfB, methodsOfA)
   validate(assert, B, A, methodsOfB)
@@ -126,4 +125,31 @@ test('makeFactory', assert => {
   assert.deepEqual(StaticD.static3(), 'D.static3', 'correct static method is called - not super class method')
   assert.deepEqual(StaticD.static4(), 'D.static4', 'correct static method is called - not super class method')
   assert.truthy(StaticD() instanceof D, 'function call returns instance')
+})
+
+test('makeFactory with stopAt', assert => {
+  const stopAt = A
+  const StaticD = makeFactory(D, stopAt)
+  const actualMethodData = getMethodsOfClass(StaticD)
+  const expectedMethodData = {
+    instanceMethods: [],
+    staticMethods: [
+      { constructor: StaticD, methodName: 'static3' },
+      { constructor: StaticD, methodName: 'static4' },
+      { constructor: StaticD, methodName: 'static2' }
+    ]
+  }
+  assert.deepEqual(actualMethodData, expectedMethodData, 'factory class has correct methods')
+  assert.deepEqual(StaticD().attribute, 'D.constructor', 'factory class as function creates correct instance')
+  assert.deepEqual(StaticD.static3(), 'D.static3', 'correct static method is called - not super class method')
+  assert.deepEqual(StaticD.static4(), 'D.static4', 'correct static method is called - not super class method')
+  assert.truthy(StaticD() instanceof D, 'function call returns instance')
+})
+
+test('makeFactory with Object', assert => {
+  const O = makeFactory(Object)
+  const actualMethodData = getMethodsOfClass(O)
+  const expectedMethodData = { instanceMethods: [], staticMethods: [] }
+  assert.deepEqual(actualMethodData, expectedMethodData, 'factory class has correct methods')
+  assert.truthy(O() instanceof Object, 'function call returns instance')
 })

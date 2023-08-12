@@ -38,7 +38,7 @@ npm install --save @toolbuilder/make-factory
 
 ## Documentation
 
-See the JSDoc comments in [source](./src/factory.js). For further examples, see the [unit tests](./test/factory_test.js).
+See the TypeScript types or the JSDoc comments in [source](./src/factory.js). For further examples, see the [unit tests](./test/class_hierarchy.test.js).
 
 ## Why
 
@@ -53,8 +53,9 @@ Contributions are welcome. Please create a pull request.
 * Package verification requires [pnpm](https://pnpm.io/) to be installed globally.
   * `npm install -g pnpm`
   * `pnpm install`
+  * `pnpm build` to build CommonJS and types
   * `pnpm run check:packfile` to test against Node ES and CommonJS projects, as well as Electron.
-  * `pnpm run check` to validate the package is ready for commit
+  * `pnpm run check` to run everything and validate the package is ready for commit
 
 ## Issues
 
