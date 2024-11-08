@@ -1,6 +1,6 @@
 {
   "name": "@toolbuilder/make-factory",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Generate a factory method from a class constructor function. Adds static methods from all super classes.",
   "keywords": [
     "javascript",
