@@ -1,4 +1,4 @@
-
+import { isAbsolute } from 'node:path'
 /**
  * Builds the CommonJS code used to support CommonJS users. Since the package is STATELESS,
  * the CommonJS code can be completely separate without creating a dual package hazard.
@@ -7,6 +7,7 @@
 export default [
   {
     input: 'src/factory.js',
+    external: (id) => !(id.startsWith('.') || isAbsolute(id)),
     output: {
       dir: 'cjs',
       format: 'cjs',
