@@ -1,5 +1,6 @@
 node_modules
-cjs/*.js
-src/*.d.ts
-src/*.d.ts.map
+*.tgz
+*.d.ts
+*.d.ts.map
 notes.md
+.tmp/

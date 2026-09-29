@@ -13,58 +13,34 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/toolbuilder/make-factory.git"
+    "url": "git+https://github.com/toolbuilder/make-factory.git"
   },
   "license": "MIT",
   "author": "Kevin Hudson",
   "type": "module",
+  "main": "./src/factory.js",
   "types": "./src/factory.d.ts",
   "exports": {
-    "types": "./src/factory.d.ts",
-    "import": "./src/factory.js",
-    "require": "./cjs/factory.js"
+    ".": {
+      "types": "./src/factory.d.ts",
+      "default": "./src/factory.js"
+    }
   },
-  "main": "./cjs/factory.js",
-  "module": "./src/factory.js",
   "files": [
-    "cjs",
     "src"
   ],
+  "sideEffects": false,
   "scripts": {
-    "build": "run-s build:*",
-    "build:commonjs": "rollup -c rollup.config.cjs.js",
-    "build:types": "run-s build:types:clean build:types:types",
-    "build:types:clean": "rimraf src/*.ts*",
-    "build:types:types": "tsc",
-    "check": "run-s build check:*",
-    "check:packagejson": "npmPkgJsonLint .",
-    "check:packfile": "rollup -c rollup.config.test.js",
-    "check:src": "standard src test",
-    "check:test": "run-s test",
-    "check:types": "tsc --project test/tsconfig.json",
-    "check:uncommitted": "uncommitted",
-    "prerelease": "run-s check",
-    "release": "commit-and-tag-version",
-    "test": "pta --reporter tap \"test/**/*test.js\""
+    "build": "tsc -p tsconfig.build.json",
+    "check:types": "tsc",
+    "test": "node --test 'test/**/*.test.js'",
+    "check": "pnpm run check:types && pnpm run build && pnpm test",
+    "validate:package": "npx -y publint && npx -y @arethetypeswrong/cli --pack . --profile esm-only",
+    "release": "changelogen --release --no-github"
   },
   "devDependencies": {
-    "@toolbuilder/package-json-lint-config": "^0.1.1",
-    "@toolbuilder/rollup-plugin-test-tools": "^1.1.0",
-    "commit-and-tag-version": "^12.5.0",
-    "npm-package-json-lint": "^8.0.0",
-    "npm-run-all2": "^7.0.1",
-    "pta": "1.2.0",
-    "rimraf": "^6.0.1",
-    "rollup": "^4.24.4",
-    "standard": "^17.1.2",
-    "typescript": "^5.6.3",
-    "uncommitted": "^1.0.0",
-    "zora": "5.0.3"
-  },
-  "npmpackagejsonlint": {
-    "extends": "@toolbuilder/package-json-lint-config"
-  },
-  "dependencies": {
-    "tsconfig.json": "^1.0.11"
+    "@types/node": "^26.6.3",
+    "changelogen": "^0.6.2",
+    "typescript": "^5.6.3"
   }
 }

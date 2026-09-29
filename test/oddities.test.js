@@ -1,15 +1,15 @@
-// @ts-ignore
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import { getMethodsOfInstance, getMethodsOfClass } from '@toolbuilder/make-factory'
-import { test } from 'zora'
 
-test('construct object with no prototype', assert => {
+test('construct object with no prototype', () => {
   const o = Object.create(null)
   const methods = getMethodsOfInstance(o)
   const expected = { instanceMethods: [], staticMethods: [] }
   assert.deepEqual(methods, expected, 'object without prototype works correctly')
 })
 
-test('data object', assert => {
+test('data object', () => {
   const o = { someProperty: null }
   const methods = getMethodsOfInstance(o)
   const expected = { instanceMethods: [], staticMethods: [] }

@@ -48,15 +48,6 @@ This library is about choice - not being pedantic. In libraries, I like to provi
 
 Contributions are welcome. Please create a pull request.
 
-* I use [pnpm](https://pnpm.js.org/) instead of npm.
-* Run the unit tests with `pnpm test`
-* Package verification requires [pnpm](https://pnpm.io/) to be installed globally.
-  * `npm install -g pnpm`
-  * `pnpm install`
-  * `pnpm build` to build CommonJS and types
-  * `pnpm run check:packfile` to test against Node ES and CommonJS projects, as well as Electron.
-  * `pnpm run check` to run everything and validate the package is ready for commit
-
 ## Issues
 
 This project uses Github issues.

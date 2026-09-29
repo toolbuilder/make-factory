@@ -1,5 +1,5 @@
-import { test } from 'zora'
-// @ts-ignore
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import { getMethodsOfClass, getMethodsOfInstance, makeFactory } from '@toolbuilder/make-factory'
 
 const A = function () { }
@@ -34,17 +34,18 @@ const expected = {
   ]
 }
 
-test('getMethodsOfClass for classic hierarchy', assert => {
+test('getMethodsOfClass for classic hierarchy', () => {
   const actual = getMethodsOfClass(B)
   assert.deepEqual(actual, expected, 'expected output')
 })
 
-test('getMethodsOfInstance for classic hierarchy', assert => {
+test('getMethodsOfInstance for classic hierarchy', () => {
   const actual = getMethodsOfInstance(new B())
   assert.deepEqual(actual, expected, 'expected output')
 })
 
-test('makeFactory for classic hierarchy', assert => {
+test('makeFactory for classic hierarchy', () => {
+  /** @type {any} */
   const factory = makeFactory(B)
   factory.method2() // ensure this is a function by calling it
   const actual = getMethodsOfInstance(factory())

@@ -1,5 +1,5 @@
-import { test } from 'zora'
-// @ts-ignore
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import { getMethodsOfClass, getMethodsOfInstance, makeFactory } from '@toolbuilder/make-factory'
 
 class A {
@@ -71,6 +71,7 @@ const methodsOfD = {
 
 // Combine methodsOf* instances together to make full set of methods for a class.
 const combinedData = (...args) => {
+  /** @type {{ instanceMethods: any[], staticMethods: any[] }} */
   const combined = { instanceMethods: [], staticMethods: [] }
   for (const data of args) {
     for (const instanceData of data.instanceMethods) {
@@ -84,31 +85,31 @@ const combinedData = (...args) => {
 }
 
 // Run test for specific combination of data
-const validate = (test, constructor, stopAt, ...data) => {
+const validate = (constructor, stopAt, ...data) => {
   const name = constructor.name
   const actual = getMethodsOfClass(constructor, stopAt)
   const expected = combinedData(...data)
   // handy that javascript now iterates Objects in a guaranteed order
-  test.deepEqual(actual, expected, `methods reported correctly for ${name}, stopping at ${stopAt.name}`)
+  assert.deepEqual(actual, expected, `methods reported correctly for ${name}, stopping at ${stopAt.name}`)
 }
 
-test('getMethodsOfClass', assert => {
-  validate(assert, Object, Object, { instanceMethods: [], staticMethods: [] })
-  validate(assert, A, Object, methodsOfA)
-  validate(assert, B, Object, methodsOfB, methodsOfA)
-  validate(assert, B, A, methodsOfB)
-  validate(assert, C, Object, methodsOfB, methodsOfA)
-  validate(assert, C, A, methodsOfB)
-  validate(assert, D, Object, methodsOfD, methodsOfB, methodsOfA)
+test('getMethodsOfClass', () => {
+  validate(Object, Object, { instanceMethods: [], staticMethods: [] })
+  validate(A, Object, methodsOfA)
+  validate(B, Object, methodsOfB, methodsOfA)
+  validate(B, A, methodsOfB)
+  validate(C, Object, methodsOfB, methodsOfA)
+  validate(C, A, methodsOfB)
+  validate(D, Object, methodsOfD, methodsOfB, methodsOfA)
 })
 
-test('getMethodsOfInstance', assert => {
+test('getMethodsOfInstance', () => {
   const actual = getMethodsOfInstance(new D(), A)
   const expected = getMethodsOfClass(D, A) // since we've just tested getMethodsOfClass
   assert.deepEqual(actual, expected, 'getMethodsOfInstance agrees with getMethodsOfClass')
 })
 
-test('makeFactory', assert => {
+test('makeFactory', () => {
   const StaticD = makeFactory(D)
   const actualMethodData = getMethodsOfClass(StaticD)
   const expectedMethodData = {
@@ -124,10 +125,10 @@ test('makeFactory', assert => {
   assert.deepEqual(StaticD().attribute, 'D.constructor', 'factory class as function creates correct instance')
   assert.deepEqual(StaticD.static3(), 'D.static3', 'correct static method is called - not super class method')
   assert.deepEqual(StaticD.static4(), 'D.static4', 'correct static method is called - not super class method')
-  assert.truthy(StaticD() instanceof D, 'function call returns instance')
+  assert.ok(StaticD() instanceof D, 'function call returns instance')
 })
 
-test('makeFactory with stopAt', assert => {
+test('makeFactory with stopAt', () => {
   const stopAt = A
   const StaticD = makeFactory(D, stopAt)
   const actualMethodData = getMethodsOfClass(StaticD)
@@ -143,13 +144,13 @@ test('makeFactory with stopAt', assert => {
   assert.deepEqual(StaticD().attribute, 'D.constructor', 'factory class as function creates correct instance')
   assert.deepEqual(StaticD.static3(), 'D.static3', 'correct static method is called - not super class method')
   assert.deepEqual(StaticD.static4(), 'D.static4', 'correct static method is called - not super class method')
-  assert.truthy(StaticD() instanceof D, 'function call returns instance')
+  assert.ok(StaticD() instanceof D, 'function call returns instance')
 })
 
-test('makeFactory with Object', assert => {
+test('makeFactory with Object', () => {
   const O = makeFactory(Object)
   const actualMethodData = getMethodsOfClass(O)
   const expectedMethodData = { instanceMethods: [], staticMethods: [] }
   assert.deepEqual(actualMethodData, expectedMethodData, 'factory class has correct methods')
-  assert.truthy(O() instanceof Object, 'function call returns instance')
+  assert.ok(O() instanceof Object, 'function call returns instance')
 })
