@@ -154,3 +154,46 @@ test('makeFactory with Object', () => {
   assert.deepEqual(actualMethodData, expectedMethodData, 'factory class has correct methods')
   assert.ok(O() instanceof Object, 'function call returns instance')
 })
+
+test('makeFactory preserves subclass `this` context in inherited static methods', () => {
+  class Base {
+    static create () {
+      return new this()
+    }
+
+    static callWho () {
+      return this.who()
+    }
+
+    static who () {
+      return 'Base'
+    }
+  }
+
+  class Derived extends Base {
+    static who () {
+      return 'Derived'
+    }
+  }
+
+  const DerivedFactory = makeFactory(Derived)
+  assert.ok(DerivedFactory.create() instanceof Derived, 'new this() in inherited static method creates subclass instance')
+  assert.equal(DerivedFactory.callWho(), 'Derived', 'this.who() in inherited static method calls overridden subclass static method')
+})
+
+test('makeFactory supports static methods that share names with Function.prototype or Object.prototype', () => {
+  class Custom {
+    static call (x) { return `call:${x}` }
+    static apply (x) { return `apply:${x}` }
+    static bind (x) { return `bind:${x}` }
+    static toString () { return 'Custom.toString' }
+    static valueOf () { return 'Custom.valueOf' }
+  }
+
+  const CustomFactory = makeFactory(Custom)
+  assert.equal(CustomFactory.call('a'), 'call:a')
+  assert.equal(CustomFactory.apply('b'), 'apply:b')
+  assert.equal(CustomFactory.bind('c'), 'bind:c')
+  assert.equal(CustomFactory.toString(), 'Custom.toString')
+  assert.equal(CustomFactory.valueOf(), 'Custom.valueOf')
+})

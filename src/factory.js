@@ -8,7 +8,7 @@
 /**
  * @template [T=any]
  * @typedef {object} Result - Provides instance and static methods of class hierarchy.
- * @property {MethodInfo<T extends abstract new (...args: any[]) => any ? InstanceType<T> : any>[]} instanceMethods - method information for instance methods.
+ * @property {MethodInfo<T extends abstract new (...args: any[]) => any ? InstanceType<T> : T>[]} instanceMethods - method information for instance methods.
  * @property {MethodInfo<T>[]} staticMethods - method information for static methods
  */
 
@@ -24,7 +24,7 @@
 /**
  * @template T
  * @template [S=never]
- * @typedef {(T extends new (...args: infer P) => infer R
+ * @typedef {(T extends abstract new (...args: infer P) => infer R
  *   ? ((...args: P) => R) & (new (...args: P) => R)
  *   : T extends (...args: infer P) => infer R
  *     ? ((...args: P) => R)
@@ -32,29 +32,40 @@
  *   Omit<T, ExcludedKeys<S> | 'prototype'>} Factory
  */
 
+const hasOwn = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop)
+
+const isMethod = (obj, prop) => {
+  const descriptor = Object.getOwnPropertyDescriptor(obj, prop)
+  return typeof descriptor?.value === 'function'
+}
+
 /**
  * Walks the class or prototype hierarchy, and returns user instance and static method names in result.
  * Typically, getMethodsOfClass or getMethodsOfInstance is easier to use.
  *
- * @type {<T extends object, S = typeof Object>(prototype: T, stopAt?: S) => Result<T extends { constructor: infer C } ? C : any>}
- * @param {object} prototype - class or constructor function prototype of hierarchy to walk.
- * @param {object} [stopAt] - stop walking hierarchy when this class or constructor function is reached
+ * @type {<T extends object | null | undefined, S = typeof Object>(prototype: T, stopAt?: S) => Result<T>}
+ * @param {object | null | undefined} prototype - class or constructor function prototype of hierarchy to walk.
+ * @param {object | null} [stopAt] - stop walking hierarchy when this class or constructor function is reached
  * @returns {Result} - the instance and static methods of the prototype chain
  */
-export const getMethods = (prototype, stopAt) => {
+export const getMethods = (prototype, stopAt = /** @type {any} */ (Object)) => {
   const instanceMethods = []
   const staticMethods = []
-  while (prototype && (prototype !== stopAt.prototype)) {
+  while (prototype && (prototype !== stopAt?.prototype)) {
     const constructor = prototype.constructor
     for (const methodName of Object.getOwnPropertyNames(prototype)) {
       if (methodName === 'constructor') continue
+      if (!isMethod(prototype, methodName)) continue
       instanceMethods.push({ constructor, methodName })
     }
-    for (const methodName of Object.getOwnPropertyNames(constructor)) {
-      if (methodName === 'length') continue
-      if (methodName === 'name') continue
-      if (methodName === 'prototype') continue
-      staticMethods.push({ constructor, methodName })
+    if (hasOwn(prototype, 'constructor') && typeof constructor === 'function') {
+      for (const methodName of Object.getOwnPropertyNames(constructor)) {
+        if (methodName === 'length') continue
+        if (methodName === 'name') continue
+        if (methodName === 'prototype') continue
+        if (!isMethod(constructor, methodName)) continue
+        staticMethods.push({ constructor, methodName })
+      }
     }
     prototype = Object.getPrototypeOf(prototype) // always returns null or Object in es6 and above
   }
@@ -82,7 +93,7 @@ export const getMethods = (prototype, stopAt) => {
  *   static d () {}
  * }
  *
- * const result = getMethods(SubClass, Object)
+ * const result = getMethodsOfClass(SubClass, Object)
  *
  * // result looks like this
  * {
@@ -108,7 +119,7 @@ export const getMethodsOfClass = (constructor, stopAt = /** @type {any} */ (Obje
  * Walks the class hierarchy or prototype chain of an instance object, and returns user
  * instance and static methods.
  *
- * @type {<T extends object, S = typeof Object>(instance: T, stopAt?: S) => Result<T extends { constructor: infer C } ? C : any>}
+ * @type {<T extends object, S = typeof Object>(instance: T, stopAt?: S) => Result<T>}
  * @param instance - object for which method data is wanted
  * @param [stopAt] - stop walking prototype chain when this
  * constructor is reached.
@@ -124,7 +135,6 @@ export const getMethodsOfInstance = (instance, stopAt = /** @type {any} */ (Obje
  *
  * @type {<T extends (abstract new (...args: any[]) => any) | (new (...args: any[]) => any) | Function, S = typeof Object>(constructor: T, stopAt?: S) => Factory<T, S>}
  * @param constructor - the constructor function
- * for which the static class is wanted
  * @param stopAt - stop walking prototype chain when this
  * constructor is reached. Static methods from stopAt are not included
  * in the returned static class.
@@ -160,9 +170,9 @@ export const makeFactory = (constructor, stopAt = /** @type {any} */ (Object)) =
     .forEach(({ constructor, methodName }) => {
     // methods are in order from subclass to superclass, so
     // if method already exists, it was created for subclass
-      if (!FactoryClass[methodName]) {
+      if (!hasOwn(FactoryClass, methodName)) {
         FactoryClass[methodName] = function (...args) {
-          return constructor[methodName](...args)
+          return constructor[methodName].apply(Ctor, args)
         }
       }
     })
